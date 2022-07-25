@@ -51,7 +51,10 @@ const calculateAverage = (
   return exerciseHours.reduce((prev, next) => prev + next, 0) / periodLength;
 };
 
-const calculateExercises = (exerciseHours: Array<number>, target: number) => {
+const calculateExercises = (
+  exerciseHours: Array<number>,
+  target: number
+): Results => {
   console.log('Got', exerciseHours, target);
   if (exerciseHours.length < 1) {
     throw new Error('Exercise hours must contain at least one entry');
