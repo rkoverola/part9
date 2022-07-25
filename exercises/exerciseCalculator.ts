@@ -13,6 +13,24 @@ interface Rating {
   ratingDescription: string;
 }
 
+interface CmdData {
+  target: number;
+  exerciseHours: Array<number>;
+}
+
+const parseCmdData = (args: Array<string>): CmdData => {
+  if (args.length < 4) throw new Error('Too few arguments');
+  const target = Number(args[2]);
+  const data = args.slice(3).map((d) => Number(d));
+  if (isNaN(target) || data.length < 1 || data.some((d) => isNaN(d))) {
+    throw new Error('Invalid arguments');
+  }
+  return {
+    target: target,
+    exerciseHours: data,
+  };
+};
+
 const calculateRating = (target: number, average: number): Rating => {
   const difference = target - average;
   if (difference < -0.3) {
@@ -34,6 +52,7 @@ const calculateAverage = (
 };
 
 const calculateExercises = (exerciseHours: Array<number>, target: number) => {
+  console.log('Got', exerciseHours, target);
   if (exerciseHours.length < 1) {
     throw new Error('Exercise hours must contain at least one entry');
   }
@@ -53,4 +72,9 @@ const calculateExercises = (exerciseHours: Array<number>, target: number) => {
   };
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+  const { target, exerciseHours } = parseCmdData(process.argv);
+  console.log(calculateExercises(exerciseHours, target));
+} catch (error: unknown) {
+  console.log('Got error', error);
+}
