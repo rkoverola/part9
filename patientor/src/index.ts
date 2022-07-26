@@ -6,6 +6,7 @@ app.use(cors());
 app.use(express.json());
 
 import diagnosesRouter from './routes/diagnoses';
+import patientsRouter from './routes/patients';
 
 app.get('/api/ping', (_req, res) => {
   console.log('Got ping in api');
@@ -13,6 +14,7 @@ app.get('/api/ping', (_req, res) => {
 });
 
 app.use('/api/diagnoses', diagnosesRouter);
+app.use('/api/patients', patientsRouter);
 
 const PORT = 3001;
 
