@@ -16,7 +16,7 @@ const parseCmdArguments = (args: Array<string>): BmiCalculatorValues => {
   }
 };
 
-export const calculateBmi = (height: number, weight: number): string => {
+const calculateBmi = (height: number, weight: number): string => {
   if (height < 0 || weight < 0) {
     throw new Error('Height and weight need to be larger than zero');
   }
@@ -36,9 +36,4 @@ export const calculateBmi = (height: number, weight: number): string => {
   }
 };
 
-try {
-  const { height, weight } = parseCmdArguments(process.argv);
-  console.log(calculateBmi(height, weight));
-} catch (error: unknown) {
-  console.log('Got an error', error);
-}
+export { parseCmdArguments, calculateBmi };

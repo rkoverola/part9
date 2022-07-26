@@ -33,14 +33,12 @@ const parseCmdData = (args: Array<string>): CmdData => {
 
 const calculateRating = (target: number, average: number): Rating => {
   const difference = target - average;
-  if (difference < -0.3) {
+  if (target < average) {
     return { rating: 3, ratingDescription: 'exceeded set target' };
-  } else if (difference < 0.2) {
+  } else if (difference < 0.3) {
     return { rating: 2, ratingDescription: 'not too bad but could be better' };
-  } else if (difference < 0.5) {
-    return { rating: 1, ratingDescription: 'failed to meet target' };
   } else {
-    throw new Error('Cannot calculate rating');
+    return { rating: 1, ratingDescription: 'failed to meet target' };
   }
 };
 
@@ -55,9 +53,11 @@ const calculateExercises = (
   exerciseHours: Array<number>,
   target: number
 ): Results => {
-  console.log('Got', exerciseHours, target);
   if (exerciseHours.length < 1) {
     throw new Error('Exercise hours must contain at least one entry');
+  }
+  if (exerciseHours.some((h) => isNaN(h))) {
+    throw new Error('Exercise hours must only contain numbers');
   }
   const periodLength = exerciseHours.length;
   const trainingDays = exerciseHours.filter((h) => h > 0).length;
@@ -75,9 +75,4 @@ const calculateExercises = (
   };
 };
 
-try {
-  const { target, exerciseHours } = parseCmdData(process.argv);
-  console.log(calculateExercises(exerciseHours, target));
-} catch (error: unknown) {
-  console.log('Got error', error);
-}
+export { calculateExercises, parseCmdData };
