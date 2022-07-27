@@ -1,14 +1,13 @@
-import patientData from '../../data/patients.json';
-import { Patient, NonSensitivePatient } from '../types';
+import patients from '../../data/patients';
+import { Patient, NonSensitivePatient, NewPatient } from '../types';
+import { v1 as uuid } from 'uuid';
 
-// NOTE: Unsafe type coersions here assume that data is of correct form.
 const getPatients = (): Array<Patient> => {
-  const patients: Array<Patient> = patientData as Patient[];
   return patients;
 };
 
 const getNonSensitivePatients = (): Array<NonSensitivePatient> => {
-  const nonSensitivePatients = patientData.map(
+  const nonSensitivePatients = patients.map(
     ({ id, name, dateOfBirth, gender, occupation }) =>
       ({
         id,
@@ -21,4 +20,14 @@ const getNonSensitivePatients = (): Array<NonSensitivePatient> => {
   return nonSensitivePatients;
 };
 
-export default { getPatients, getNonSensitivePatients };
+const addPatient = (newPatient: NewPatient): Patient => {
+  console.log('Adding new patient: ', newPatient);
+  const patient: Patient = {
+    id: uuid(),
+    ...newPatient,
+  };
+  patients.push(patient);
+  return patient;
+};
+
+export default { getPatients, getNonSensitivePatients, addPatient };
