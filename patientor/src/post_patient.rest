@@ -2,9 +2,9 @@ POST http://localhost:3001/api/patients
 Content-Type: application/json
 
 {
-  "name": "Clarence Boedicer",
-  "dateOfBirth": "1985-07-09",
+  "name": "Zuul",
+  "dateOfBirth": "07-09",
   "ssn": "090786-122Y",
-  "gender": "male",
+  "gender": "other",
   "occupation": "Entrepreneur"
 }
