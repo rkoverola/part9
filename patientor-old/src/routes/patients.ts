@@ -6,8 +6,18 @@ import toNewPatient from '../utils/utils';
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  console.log('Patients before sanitazing', patientService.getPatients());
-  res.send(patientService.getNonSensitivePatients());
+  return res.send(patientService.getNonSensitivePatients());
+});
+
+router.get('/:id', (req, res) => {
+  console.log('Got request for id', req.params.id);
+  const patient = patientService.getPatient(req.params.id);
+  if (!patient) {
+    return res
+      .status(400)
+      .send(`Could not find patient with id ${req.params.id}`);
+  }
+  return res.json(patient);
 });
 
 router.post('/', (req, res) => {
@@ -16,13 +26,13 @@ router.post('/', (req, res) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const newPatient = toNewPatient(req.body);
     const addedPatient = patientService.addPatient(newPatient);
-    res.json(addedPatient);
+    return res.json(addedPatient);
   } catch (error: unknown) {
     let errorMessage = 'Error when adding patient.';
     if (error instanceof Error) {
       errorMessage += ' Error: ' + error.message;
     }
-    res.status(400).send(errorMessage);
+    return res.status(400).send(errorMessage);
   }
 });
 

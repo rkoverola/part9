@@ -44,10 +44,10 @@ const data = [
   },
 ];
 
-// FIXME: Add unique id's here to have consistency with new added patients?
 const patients: Patient[] = data.map((obj) => {
   const patient = toNewPatient(obj) as Patient;
   patient.id = obj.id;
+  patient.entries = [];
   return patient;
 });
 
