@@ -1,5 +1,5 @@
 const Total = ({ total }: { total: number }) => {
-  return <p>Number of exercises: {total}</p>;
+  return <h2>Number of exercises: {total}</h2>;
 };
 
 export default Total;
