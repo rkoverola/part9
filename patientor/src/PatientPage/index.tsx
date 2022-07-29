@@ -20,18 +20,19 @@ const NoEntryCard = () => {
 };
 
 const EntryCard = ({ entry }: { entry: Entry }) => {
+  const [{ diagnoses }] = useStateValue();
   return (
     <Card>
       <CardContent>
         <Typography variant="h6">Date: {entry.date}</Typography>
         <Typography>{entry.description}</Typography>
         <Typography variant="h6">
-          {entry.diagnosisCodes ? 'Diagnosis codes:' : ''}
+          {entry.diagnosisCodes ? 'Diagnoses:' : ''}
         </Typography>
         {entry.diagnosisCodes?.map((dc) => {
           return (
             <Typography variant="subtitle1" key={dc}>
-              {dc}
+              {dc}: {diagnoses.find((d) => d.code == dc)?.name}
             </Typography>
           );
         })}
