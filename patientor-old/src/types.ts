@@ -64,4 +64,4 @@ export enum Gender {
   Other = 'other',
 }
 
-export type NewPatient = Omit<Patient, 'id'>;
+export type NewPatient = Omit<Patient, 'id' | 'entries'>;
