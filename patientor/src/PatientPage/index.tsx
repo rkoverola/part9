@@ -3,10 +3,67 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import { useParams } from 'react-router-dom';
 
-import { Patient } from '../types';
+import { Entry, Patient } from '../types';
 import { useStateValue } from '../state';
 import { setPatientInView } from '../state';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
+
+const NoEntryCard = () => {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6">No entries</Typography>
+        <Typography>No data available.</Typography>
+      </CardContent>
+    </Card>
+  );
+};
+
+const EntryCard = ({ entry }: { entry: Entry }) => {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6">Date: {entry.date}</Typography>
+        <Typography>{entry.description}</Typography>
+        <Typography variant="h6">
+          {entry.diagnosisCodes ? 'Diagnosis codes:' : ''}
+        </Typography>
+        {entry.diagnosisCodes?.map((dc) => {
+          return (
+            <Typography variant="subtitle1" key={dc}>
+              {dc}
+            </Typography>
+          );
+        })}
+      </CardContent>
+    </Card>
+  );
+};
+
+const NoDataCard = () => {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6">No such patient</Typography>
+        <Typography>No data available.</Typography>
+      </CardContent>
+    </Card>
+  );
+};
+
+const PatientCard = ({ patient }: { patient: Patient }) => {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6">{patient.name}</Typography>
+        <Typography>Gender: {patient.gender}</Typography>
+        <Typography>Occupation: {patient.occupation}</Typography>
+        <Typography>Date of birth: {patient.dateOfBirth}</Typography>
+        <Typography>Social security number: {patient.ssn}</Typography>
+      </CardContent>
+    </Card>
+  );
+};
 
 const PatientPage = () => {
   const params = useParams();
@@ -28,34 +85,32 @@ const PatientPage = () => {
     void fetchPatient();
   }
 
-  const noPatientContent = (
-    <React.Fragment>
-      <CardContent>
-        <Typography variant="h5">No such patient</Typography>
-        <Typography>No data available.</Typography>
-      </CardContent>
-    </React.Fragment>
-  );
-
-  const patientCardContent = (
-    <React.Fragment>
-      <CardContent>
-        <Typography variant="h5">{patientInView?.name}</Typography>
-        <Typography>Gender: {patientInView?.gender}</Typography>
-        <Typography>Occupation: {patientInView?.occupation}</Typography>
-        <Typography>Date of birth: {patientInView?.dateOfBirth}</Typography>
-        <Typography>Social security number: {patientInView?.ssn}</Typography>
-      </CardContent>
-    </React.Fragment>
-  );
-
-  const placeContent = () =>
-    patientInView ? patientCardContent : noPatientContent;
+  const patientHasEntries = () => {
+    if (
+      patientInView &&
+      patientInView.entries &&
+      patientInView.entries.length > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <Grid>
       <Grid item xs={8}>
-        <Card>{placeContent()}</Card>
+        <Typography variant="h5">Patient</Typography>
+        {patientInView ? (
+          <PatientCard patient={patientInView} />
+        ) : (
+          <NoDataCard />
+        )}
+        <Typography variant="h5">Entries</Typography>
+        {patientInView?.entries.map((e) => {
+          return <EntryCard entry={e} key={e.id} />;
+        })}
+        {patientHasEntries() ? null : <NoEntryCard />}
       </Grid>
     </Grid>
   );
