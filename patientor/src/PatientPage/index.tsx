@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 
 import { Patient } from '../types';
 import { useStateValue } from '../state';
+import { setPatientInView } from '../state';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 const PatientPage = () => {
@@ -19,7 +20,7 @@ const PatientPage = () => {
           `${apiBaseUrl}/patients/${definedId}`
         );
         console.log('Adding patient', patient);
-        dispatch({ type: 'SET_PATIENT_IN_VIEW', payload: patient });
+        dispatch(setPatientInView(patient));
       } catch (error: unknown) {
         console.error(error);
       }
