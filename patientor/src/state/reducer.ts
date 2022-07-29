@@ -39,7 +39,7 @@ export const reducer = (state: State, action: Action): State => {
     case 'SET_PATIENT_IN_VIEW':
       return {
         ...state,
-        patient_in_view: action.payload,
+        patientInView: action.payload,
       };
     default:
       return state;

@@ -9,9 +9,10 @@ import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 const PatientPage = () => {
   const params = useParams();
-  const definedId = params.id ? params.id : '';
-  const [{ patient_in_view }, dispatch] = useStateValue();
-  React.useEffect(() => {
+  const definedId = params.id ? params.id : 'INVALID';
+  const [{ patientInView }, dispatch] = useStateValue();
+
+  if (patientInView?.id !== definedId) {
     const fetchPatient = async () => {
       try {
         const { data: patient } = await axios.get<Patient>(
@@ -24,7 +25,7 @@ const PatientPage = () => {
       }
     };
     void fetchPatient();
-  }, []);
+  }
 
   const noPatientContent = (
     <React.Fragment>
@@ -38,17 +39,17 @@ const PatientPage = () => {
   const patientCardContent = (
     <React.Fragment>
       <CardContent>
-        <Typography variant="h5">{patient_in_view?.name}</Typography>
-        <Typography>Gender: {patient_in_view?.gender}</Typography>
-        <Typography>Occupation: {patient_in_view?.occupation}</Typography>
-        <Typography>Date of birth: {patient_in_view?.dateOfBirth}</Typography>
-        <Typography>Social security number: {patient_in_view?.ssn}</Typography>
+        <Typography variant="h5">{patientInView?.name}</Typography>
+        <Typography>Gender: {patientInView?.gender}</Typography>
+        <Typography>Occupation: {patientInView?.occupation}</Typography>
+        <Typography>Date of birth: {patientInView?.dateOfBirth}</Typography>
+        <Typography>Social security number: {patientInView?.ssn}</Typography>
       </CardContent>
     </React.Fragment>
   );
 
   const placeContent = () =>
-    patient_in_view ? patientCardContent : noPatientContent;
+    patientInView ? patientCardContent : noPatientContent;
 
   return (
     <Grid>
