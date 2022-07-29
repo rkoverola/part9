@@ -44,15 +44,6 @@ const PatientPage = () => {
     }
   };
 
-  if (!patientInView || !patientInView.entries) {
-    let x = -1;
-    if (patientInView && 'entries' in patientInView) {
-      x = patientInView.entries.length;
-      console.log('Got here', x);
-    }
-    return <div>Patient entries are: {x}</div>;
-  }
-
   return (
     <Grid>
       <Grid item xs={8}>
