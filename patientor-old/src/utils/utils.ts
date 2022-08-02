@@ -1,4 +1,24 @@
-import { NewPatient, Gender } from '../types';
+import {
+  NewPatient,
+  Gender,
+  HospitalEntry,
+  OccupationalHealthcareEntry,
+  HealthCheckEntry,
+  HealthCheckRating,
+} from '../types';
+
+type EntryFields = {
+  id: unknown;
+  description: unknown;
+  date: unknown;
+  specialist: unknown;
+  diagnosisCodes: unknown;
+  type: unknown;
+  healthCheckRating: unknown;
+  employerName: unknown;
+  sickLeave: unknown;
+  discharge: unknown;
+};
 
 type PatientFields = {
   name: unknown;
@@ -76,4 +96,101 @@ const toNewPatient = ({
   return newPatient;
 };
 
-export default toNewPatient;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isRating = (input: any): input is HealthCheckRating => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return Object.values(HealthCheckRating).includes(input);
+};
+
+// FIXME: Does this even validate anything?
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isValidCodeArray = (codes: string[]): codes is string[] => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return codes.every((code) => isString(code));
+};
+
+const parseDiagnosisCodes = (input: unknown): string[] | undefined => {
+  if (input === undefined) {
+    return undefined;
+  }
+  if (!input || !isValidCodeArray(input as string[])) {
+    throw new Error('Invalid diagnosis codes field: ' + input);
+  }
+  return input as string[];
+};
+
+const parseHealthCheckRating = (input: unknown) => {
+  if (!input || !isRating(input)) {
+    throw new Error('Invalid health check rating: ' + input);
+  }
+  return input;
+};
+
+const parseStringField = (field: unknown, fieldName: string) => {
+  if (!field || !isString(field)) {
+    throw new Error(`Invalid field ${fieldName} with value ${field}`);
+  }
+  return field;
+};
+
+// TODO: Input validation for optional fields: discharge, sickleave
+const toNewEntry = ({
+  description,
+  date,
+  specialist,
+  diagnosisCodes,
+  type,
+  healthCheckRating,
+  employerName,
+  sickLeave,
+  discharge,
+}: EntryFields) => {
+  const vId = 'placeholder';
+  const vDescription = parseStringField(description, 'description');
+  const vDate = parseStringField(date, 'date');
+  const vSpecialist = parseStringField(specialist, 'specialist');
+  const vDiagnosisCodes = parseDiagnosisCodes(diagnosisCodes);
+
+  switch (type) {
+    case 'Hospital':
+      const newHE: HospitalEntry = {
+        id: vId,
+        description: vDescription,
+        date: vDate,
+        specialist: vSpecialist,
+        diagnosisCodes: vDiagnosisCodes,
+        type: 'Hospital',
+        discharge: discharge as { date: string; criteria: string } | undefined,
+      };
+      return newHE;
+    case 'OccupationalHealthcare':
+      const newOHE: OccupationalHealthcareEntry = {
+        id: vId,
+        description: vDescription,
+        date: vDate,
+        specialist: vSpecialist,
+        diagnosisCodes: vDiagnosisCodes,
+        type: 'OccupationalHealthcare',
+        employerName: parseStringField(employerName, 'employerName'),
+        sickLeave: sickLeave as
+          | { startDate: string; endDate: string }
+          | undefined,
+      };
+      return newOHE;
+    case 'HealthCheck':
+      const newHCE: HealthCheckEntry = {
+        id: vId,
+        description: vDescription,
+        date: vDate,
+        specialist: vSpecialist,
+        diagnosisCodes: vDiagnosisCodes,
+        type: 'HealthCheck',
+        healthCheckRating: parseHealthCheckRating(healthCheckRating),
+      };
+      return newHCE;
+    default:
+      throw new Error('Invalid type' + type);
+  }
+};
+
+export { toNewPatient, toNewEntry };

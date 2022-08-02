@@ -1,7 +1,8 @@
 import express from 'express';
 import patientService from '../services/patientService';
+import entryService from '../services/entryService';
 
-import toNewPatient from '../utils/utils';
+import { toNewPatient, toNewEntry } from '../utils/utils';
 
 const router = express.Router();
 
@@ -21,12 +22,28 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  console.log('Message received on POST endpoint', req.body);
+  console.log('Message received on POST patient endpoint', req.body);
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const newPatient = toNewPatient(req.body);
     const addedPatient = patientService.addPatient(newPatient);
     return res.json(addedPatient);
+  } catch (error: unknown) {
+    let errorMessage = 'Error when adding patient.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    return res.status(400).send(errorMessage);
+  }
+});
+
+router.post('/:id/entries', (req, res) => {
+  console.log('Message received on POST patient entry endpoint', req.body);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const newEntry = toNewEntry(req.body);
+    const addedEntry = entryService.addEntry(newEntry, req.params.id);
+    return res.json(addedEntry);
   } catch (error: unknown) {
     let errorMessage = 'Error when adding patient.';
     if (error instanceof Error) {
