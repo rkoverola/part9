@@ -99,10 +99,13 @@ const toNewPatient = ({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isRating = (input: any): input is HealthCheckRating => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return Object.values(HealthCheckRating).includes(input);
+  const filtered = Object.values(HealthCheckRating).filter(
+    (v) => !isNaN(Number(v))
+  );
+  console.log(`Input: ${input} is in ${filtered} => ${input in filtered}`);
+  return input in filtered;
 };
 
-// FIXME: Does this even validate anything?
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isValidCodeArray = (codes: string[]): codes is string[] => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -120,7 +123,7 @@ const parseDiagnosisCodes = (input: unknown): string[] | undefined => {
 };
 
 const parseHealthCheckRating = (input: unknown) => {
-  if (!input || !isRating(input)) {
+  if (!isRating(input)) {
     throw new Error('Invalid health check rating: ' + input);
   }
   return input;

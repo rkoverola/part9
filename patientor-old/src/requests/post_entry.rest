@@ -8,5 +8,5 @@ Content-Type: application/json
   "specialist": "vSpecialist",
   "type": "HealthCheck",
   "employerName": "Doop",
-  "healthCheckRating": "LowRisk"
+  "healthCheckRating": 1
 }
