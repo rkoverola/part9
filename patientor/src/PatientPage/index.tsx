@@ -4,7 +4,7 @@ import { apiBaseUrl } from '../constants';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 
-import { Entry, HospitalEntry, Patient } from '../types';
+import { Entry, HealthCheckEntry, HospitalEntry, Patient } from '../types';
 import { addPatient, useStateValue } from '../state';
 import { setPatientInView } from '../state';
 import { Grid, Typography } from '@material-ui/core';
@@ -73,8 +73,35 @@ const PatientPage = () => {
 
   const submitHealthCheckEntry = async (values: FormValues) => {
     const hcValues = values as HealthCheckEntryFormValues;
-    await axios.post('Doop');
-    console.log('Submitting health check entry', hcValues);
+
+    console.log('Got data', hcValues);
+
+    const entry: HealthCheckEntry = {
+      id: 'placeholder',
+      type: 'HealthCheck',
+      date: values.date,
+      description: values.description,
+      specialist: values.specialist,
+      healthCheckRating: hcValues.healthCheckRating,
+      diagnosisCodes: values.diagnosisCodes,
+    };
+
+    console.log('Submitting entry', entry);
+
+    try {
+      if (!patientInView) {
+        throw new Error('No patient in view');
+      }
+      const { data: postedEntry } = await axios.post<Entry>(
+        `${apiBaseUrl}/patients/${patientInView?.id}/entries`,
+        entry
+      );
+      patientInView.entries.push(postedEntry);
+      dispatch(addPatient(patientInView));
+      closeModal();
+    } catch (error: unknown) {
+      console.log('Got error', error);
+    }
   };
 
   const definedId = params.id ? params.id : 'INVALID';

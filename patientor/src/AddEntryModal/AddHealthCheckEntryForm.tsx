@@ -57,6 +57,9 @@ const AddHealthCheckEntryForm = ({ onSubmit, onCancel }: Props) => {
         if (!values.specialist) {
           errors.specialist = requiredError;
         }
+        if (!values.healthCheckRating) {
+          errors.healthCheckRating = requiredError;
+        }
         return errors;
       }}
     >
