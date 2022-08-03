@@ -2,15 +2,26 @@ import React from 'react';
 import { Grid, Button } from '@material-ui/core';
 import { Field, Formik, Form } from 'formik';
 
-import { TextField } from '../AddPatientModal/FormField';
+import { RatingField, TextField } from '../AddPatientModal/FormField';
 import { useStateValue } from '../state';
 import { DiagnosisSelection } from '../AddPatientModal/FormField';
 import { FormValues } from '.';
+
+import { HealthCheckRating } from '../types';
+import { RatingOption } from '../AddPatientModal/FormField';
+
+const ratingOptions: RatingOption[] = [
+  { value: HealthCheckRating.Healthy, label: 'Healthy' },
+  { value: HealthCheckRating.LowRisk, label: 'LowRisk' },
+  { value: HealthCheckRating.HighRisk, label: 'HighRisk' },
+  { value: HealthCheckRating.CriticalRisk, label: 'CriticalRisk' },
+];
 
 export type HealthCheckEntryFormValues = {
   date: '';
   description: '';
   specialist: '';
+  healthCheckRating: HealthCheckRating;
   diagnosisCodes: string[];
 };
 
@@ -30,9 +41,11 @@ const AddHealthCheckEntryForm = ({ onSubmit, onCancel }: Props) => {
         description: '',
         specialist: '',
         diagnosisCodes: [],
+        healthCheckRating: HealthCheckRating.Healthy,
       }}
       onSubmit={onSubmit}
-      validate={(values) => {
+      validate={(raw_values) => {
+        const values = raw_values as HealthCheckEntryFormValues;
         const requiredError = 'Field is required';
         const errors: { [field: string]: string } = {};
         if (!values.date) {
@@ -67,6 +80,11 @@ const AddHealthCheckEntryForm = ({ onSubmit, onCancel }: Props) => {
               placeholder="Specialist"
               name="specialist"
               component={TextField}
+            />
+            <RatingField
+              label="Rating"
+              name="healthCheckRating"
+              options={ratingOptions}
             />
             <DiagnosisSelection
               setFieldValue={setFieldValue}
