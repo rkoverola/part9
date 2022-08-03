@@ -44,7 +44,7 @@ const HealthRatingIcon = ({
     case 3:
       return <FavoriteIcon color="error" />;
     default:
-      throw new Error('Invalid health rating');
+      throw new Error(`Invalid health check rating: ${rating}`);
   }
 };
 
