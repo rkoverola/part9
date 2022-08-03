@@ -12,28 +12,32 @@ import { Button } from '@material-ui/core';
 
 import { PatientCard, NoPatientCard } from './PatientCard';
 import { EntryCard, NoEntryCard } from './EntryCard';
-import AddEntryModal from '../AddEntryModal';
-import { HospitalEntryFormValues } from '../AddEntryModal/AddEntryForm';
+import AddEntryModal, { FormValues } from '../AddEntryModal';
+import { HospitalEntryFormValues } from '../AddEntryModal/AddHospitalEntryForm';
+import { HealthCheckEntryFormValues } from '../AddEntryModal/AddHealthCheckEntryForm';
 
 const PatientPage = () => {
   const params = useParams();
 
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [openModalType, setOpenModalType] = useState<string | undefined>(
+    undefined
+  );
   const [error, setError] = React.useState<string>();
 
-  const openModal = (): void => setModalOpen(true);
+  const openModal = (type: string): void => setOpenModalType(type);
 
   const closeModal = (): void => {
-    setModalOpen(false);
+    setOpenModalType(undefined);
     setError(undefined);
   };
 
-  const submitNewHospitalEntry = async (values: HospitalEntryFormValues) => {
+  const submitHospitalEntry = async (values: FormValues) => {
+    const hValues = values as HospitalEntryFormValues;
     let discharge = undefined;
-    if (values.dischargeDate && values.dischargeCriteria) {
+    if (hValues.dischargeDate && hValues.dischargeCriteria) {
       discharge = {
-        date: values.dischargeDate,
-        criteria: values.dischargeCriteria,
+        date: hValues.dischargeDate,
+        criteria: hValues.dischargeCriteria,
       };
     }
 
@@ -65,6 +69,12 @@ const PatientPage = () => {
     } catch (error: unknown) {
       console.log('Got error', error);
     }
+  };
+
+  const submitHealthCheckEntry = async (values: FormValues) => {
+    const hcValues = values as HealthCheckEntryFormValues;
+    await axios.post('Doop');
+    console.log('Submitting health check entry', hcValues);
   };
 
   const definedId = params.id ? params.id : 'INVALID';
@@ -117,13 +127,24 @@ const PatientPage = () => {
       </Grid>
       <Typography variant="h5">Add new</Typography>
       <AddEntryModal
-        modalOpen={modalOpen}
-        onSubmit={submitNewHospitalEntry}
+        type="Hospital"
+        modalOpen={openModalType === 'Hospital'}
+        onSubmit={submitHospitalEntry}
         error={error}
         onClose={closeModal}
       />
-      <Button variant="contained" onClick={() => openModal()}>
+      <Button variant="contained" onClick={() => openModal('Hospital')}>
         Add New Hospital Entry
+      </Button>
+      <AddEntryModal
+        type="HealthCheck"
+        modalOpen={openModalType === 'HealthCheck'}
+        onSubmit={submitHealthCheckEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button variant="contained" onClick={() => openModal('HealthCheck')}>
+        Add New Health Check Entry
       </Button>
     </div>
   );

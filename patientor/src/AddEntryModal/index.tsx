@@ -1,24 +1,53 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, Divider } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import AddEntryForm, { HospitalEntryFormValues } from './AddEntryForm';
+import AddHospitalEntryForm, {
+  HospitalEntryFormValues,
+} from './AddHospitalEntryForm';
+import AddHealthCheckEntryForm, {
+  HealthCheckEntryFormValues,
+} from './AddHealthCheckEntryForm';
+
+export type FormValues = HospitalEntryFormValues | HealthCheckEntryFormValues;
 
 interface Props {
+  type: string;
   modalOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: HospitalEntryFormValues) => void;
+  onSubmit: (values: FormValues) => void;
   error?: string;
 }
 
-const AddPatientModal = ({ modalOpen, onClose, onSubmit, error }: Props) => (
-  <Dialog fullWidth={true} open={modalOpen} onClose={() => onClose()}>
-    <DialogTitle>Add a new entry</DialogTitle>
-    <Divider />
-    <DialogContent>
-      {error && <Alert severity="error">{`Error: ${error}`}</Alert>}
-      <AddEntryForm onSubmit={onSubmit} onCancel={onClose} />
-    </DialogContent>
-  </Dialog>
-);
+const AddEntryModal = ({
+  type,
+  modalOpen,
+  onClose,
+  onSubmit,
+  error,
+}: Props) => {
+  const addFormBasedOnType = (type: string) => {
+    switch (type) {
+      case 'Hospital':
+        return <AddHospitalEntryForm onSubmit={onSubmit} onCancel={onClose} />;
+      case 'HealthCheck':
+        return (
+          <AddHealthCheckEntryForm onSubmit={onSubmit} onCancel={onClose} />
+        );
+      default:
+        throw new Error('Unknown form type');
+    }
+  };
 
-export default AddPatientModal;
+  return (
+    <Dialog fullWidth={true} open={modalOpen} onClose={() => onClose()}>
+      <DialogTitle>Add a new {type.toLowerCase()} entry</DialogTitle>
+      <Divider />
+      <DialogContent>
+        {error && <Alert severity="error">{`Error: ${error}`}</Alert>}
+        {addFormBasedOnType(type)}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default AddEntryModal;

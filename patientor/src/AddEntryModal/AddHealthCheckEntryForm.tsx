@@ -5,23 +5,22 @@ import { Field, Formik, Form } from 'formik';
 import { TextField } from '../AddPatientModal/FormField';
 import { useStateValue } from '../state';
 import { DiagnosisSelection } from '../AddPatientModal/FormField';
+import { FormValues } from '.';
 
-export type HospitalEntryFormValues = {
+export type HealthCheckEntryFormValues = {
   date: '';
   description: '';
   specialist: '';
-  dischargeDate: '';
-  dischargeCriteria: '';
   diagnosisCodes: string[];
 };
 
 interface Props {
-  onSubmit: (values: HospitalEntryFormValues) => void;
+  onSubmit: (values: FormValues) => void;
   onCancel: () => void;
 }
 
 // FIXME: DiagnosisSelection sets diagnosiscodes, but with last one missing
-const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
+const AddHealthCheckEntryForm = ({ onSubmit, onCancel }: Props) => {
   const [{ diagnoses }] = useStateValue();
 
   return (
@@ -30,8 +29,6 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         date: '',
         description: '',
         specialist: '',
-        dischargeDate: '',
-        dischargeCriteria: '',
         diagnosisCodes: [],
       }}
       onSubmit={onSubmit}
@@ -46,13 +43,6 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         }
         if (!values.specialist) {
           errors.specialist = requiredError;
-        }
-        if (
-          (!values.dischargeDate && values.dischargeCriteria) ||
-          (values.dischargeDate && !values.dischargeCriteria)
-        ) {
-          errors.dischargeDate = requiredError;
-          errors.dischargeCriteria = requiredError;
         }
         return errors;
       }}
@@ -82,18 +72,6 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
               setFieldValue={setFieldValue}
               setFieldTouched={setFieldTouched}
               diagnoses={Object.values(diagnoses)}
-            />
-            <Field
-              label="Discharge date"
-              placeholder="YYYY-MM-DD"
-              name="dischargeDate"
-              component={TextField}
-            />
-            <Field
-              label="Discharge criteria"
-              placeholder="Discharge criteria"
-              name="dischargeCriteria"
-              component={TextField}
             />
             <Grid>
               <Grid item>
@@ -127,4 +105,4 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
   );
 };
 
-export default AddEntryForm;
+export default AddHealthCheckEntryForm;
