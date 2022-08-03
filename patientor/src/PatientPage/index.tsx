@@ -4,7 +4,13 @@ import { apiBaseUrl } from '../constants';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 
-import { Entry, HealthCheckEntry, HospitalEntry, Patient } from '../types';
+import {
+  Entry,
+  HealthCheckEntry,
+  HospitalEntry,
+  OccupationalHealthcareEntry,
+  Patient,
+} from '../types';
 import { addPatient, useStateValue } from '../state';
 import { setPatientInView } from '../state';
 import { Grid, Typography } from '@material-ui/core';
@@ -15,6 +21,7 @@ import { EntryCard, NoEntryCard } from './EntryCard';
 import AddEntryModal, { FormValues } from '../AddEntryModal';
 import { HospitalEntryFormValues } from '../AddEntryModal/AddHospitalEntryForm';
 import { HealthCheckEntryFormValues } from '../AddEntryModal/AddHealthCheckEntryForm';
+import { OccupationalHealthcareEntryFormValues } from '../AddEntryModal/AddOccupationalHealthcareEntryForm';
 
 const PatientPage = () => {
   const params = useParams();
@@ -34,7 +41,7 @@ const PatientPage = () => {
   const submitHospitalEntry = async (values: FormValues) => {
     const hValues = values as HospitalEntryFormValues;
     let discharge = undefined;
-    if (hValues.dischargeDate && hValues.dischargeCriteria) {
+    if (hValues.dischargeCriteria && hValues.dischargeDate) {
       discharge = {
         date: hValues.dischargeDate,
         criteria: hValues.dischargeCriteria,
@@ -50,6 +57,47 @@ const PatientPage = () => {
       description: values.description,
       specialist: values.specialist,
       discharge: discharge,
+      diagnosisCodes: values.diagnosisCodes,
+    };
+
+    console.log('Submitting entry', entry);
+
+    try {
+      if (!patientInView) {
+        throw new Error('No patient in view');
+      }
+      const { data: postedEntry } = await axios.post<Entry>(
+        `${apiBaseUrl}/patients/${patientInView?.id}/entries`,
+        entry
+      );
+      patientInView.entries.push(postedEntry);
+      dispatch(addPatient(patientInView));
+      closeModal();
+    } catch (error: unknown) {
+      console.log('Got error', error);
+    }
+  };
+
+  const submitOccupationalHealthcareEntry = async (values: FormValues) => {
+    const ohcValues = values as OccupationalHealthcareEntryFormValues;
+    let sickLeave = undefined;
+    if (ohcValues.startDate && ohcValues.endDate) {
+      sickLeave = {
+        startDate: ohcValues.startDate,
+        endDate: ohcValues.endDate,
+      };
+    }
+
+    console.log('Got data', values);
+
+    const entry: OccupationalHealthcareEntry = {
+      id: 'placeholder',
+      type: 'OccupationalHealthcare',
+      date: values.date,
+      description: values.description,
+      specialist: values.specialist,
+      employerName: ohcValues.employerName,
+      sickLeave: sickLeave,
       diagnosisCodes: values.diagnosisCodes,
     };
 
@@ -160,9 +208,6 @@ const PatientPage = () => {
         error={error}
         onClose={closeModal}
       />
-      <Button variant="contained" onClick={() => openModal('Hospital')}>
-        Add New Hospital Entry
-      </Button>
       <AddEntryModal
         type="HealthCheck"
         modalOpen={openModalType === 'HealthCheck'}
@@ -170,8 +215,25 @@ const PatientPage = () => {
         error={error}
         onClose={closeModal}
       />
+
+      <AddEntryModal
+        type="OccupationalHealthcare"
+        modalOpen={openModalType === 'OccupationalHealthcare'}
+        onSubmit={submitOccupationalHealthcareEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button variant="contained" onClick={() => openModal('Hospital')}>
+        Add New Hospital Entry
+      </Button>
       <Button variant="contained" onClick={() => openModal('HealthCheck')}>
         Add New Health Check Entry
+      </Button>
+      <Button
+        variant="contained"
+        onClick={() => openModal('OccupationalHealthcare')}
+      >
+        Add New Occupational Healthcare Entry
       </Button>
     </div>
   );

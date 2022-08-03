@@ -7,8 +7,14 @@ import AddHospitalEntryForm, {
 import AddHealthCheckEntryForm, {
   HealthCheckEntryFormValues,
 } from './AddHealthCheckEntryForm';
+import AddOccupationalHealtcareEntryForm, {
+  OccupationalHealthcareEntryFormValues,
+} from './AddOccupationalHealthcareEntryForm';
 
-export type FormValues = HospitalEntryFormValues | HealthCheckEntryFormValues;
+export type FormValues =
+  | HospitalEntryFormValues
+  | HealthCheckEntryFormValues
+  | OccupationalHealthcareEntryFormValues;
 
 interface Props {
   type: string;
@@ -32,6 +38,13 @@ const AddEntryModal = ({
       case 'HealthCheck':
         return (
           <AddHealthCheckEntryForm onSubmit={onSubmit} onCancel={onClose} />
+        );
+      case 'OccupationalHealthcare':
+        return (
+          <AddOccupationalHealtcareEntryForm
+            onSubmit={onSubmit}
+            onCancel={onClose}
+          />
         );
       default:
         throw new Error('Unknown form type');
